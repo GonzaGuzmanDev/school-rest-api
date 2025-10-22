@@ -7,15 +7,42 @@ class CoursesController {
     }
     
     async create(req, res) {
-        res.status(200).json({msg: "Create a new course"});
+        const [teacherRows] = await db.execute('SELECT * FROM teachers WHERE id = ?', [req.body.teacherId]);
+        if (teacherRows.length === 0) {
+            return res.status(400).json({ msg: "Invalid teacher ID" });
+        }
+
+        const { name, description, teacherId } = req.body;
+        const query = 'INSERT INTO courses (name, description, teacher_id) VALUES (?, ?, ?)';
+        const values = [name, description, teacherId];
+        try {
+            const [rows] = await db.execute(query, values);
+            res.status(200).json({msg: "Insert course OK", rows});
+        }catch(error){
+            console.error('Error creating course:', error);
+            res.status(500).json({msg: "Internal server error"});
+        }
     }
 
     async getAll(req, res) {
-        res.status(200).json({msg: "Get all courses"});
+        const query = 'SELECT * FROM courses';
+        try{
+            const [rows] = await db.execute(query);
+            res.status(200).json(rows);
+        }catch(e){
+            console.error('Error fetching courses:', e);
+        }
     }
 
     async getById(req, res) {
-        res.status(200).json({msg: "Get course by ID" + req.params.id});
+        const id = req.params.id;
+        const query = 'SELECT * FROM courses WHERE id = ?';
+        try{
+            const [rows] = await db.execute(query, [id]);
+            res.status(200).json(rows);
+        }catch(e){
+            console.error('Error fetching course by ID:', e);
+        }
     }
 
     async update(req, res) {

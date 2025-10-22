@@ -4,6 +4,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import studentsRoutes from './routes/studentsRoute.js';
 import teachersRoutes from './routes/teachersRoute.js';
+import coursesRoutes from './routes/coursesRoute.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(cors());
 
 app.use('/students', studentsRoutes);
 app.use('/teachers', teachersRoutes);
+app.use('/courses', coursesRoutes)
 
 try{
     app.listen(PORT, () => {
